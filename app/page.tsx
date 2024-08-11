@@ -41,8 +41,9 @@ export default function Home() {
         </button>
       </div>
       {restaurants.length > 0 ? (
-        <Turntable restaurants={restaurants} onSpin={handleSpin} />
+        <Turntable />
       ) : (
+        // <Turntable restaurants={restaurants} onSpin={handleSpin} />
         <p>Add some restaurants to start spinning!</p>
       )}
       <Modal

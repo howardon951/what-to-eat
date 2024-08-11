@@ -1,77 +1,88 @@
-import React, { useState } from "react";
+import React from "react";
+// import PrizeContainer from "./PrizeContainer";
+// import Prize from "./Prize";
+// import DrawButton from "./DrawButton";
 
-interface TurntableProps {
-  restaurants: string[];
-  onSpin: (winner: string) => void;
-}
+const prizes = [
+  { name: "1等奖", description: "獎品" },
+  { name: "2等奖", description: "獎品" },
+  { name: "3等奖", description: "獎品" },
+  { name: "4等奖", description: "獎品" },
+  { name: "5等奖", description: "獎品" },
+  { name: "6等奖", description: "獎品" },
+];
 
-const Turntable: React.FC<TurntableProps> = ({ restaurants, onSpin }) => {
-  const [spinning, setSpinning] = useState(false);
-  const [rotation, setRotation] = useState(0);
-
-  const spin = () => {
-    setSpinning(true);
-    const newRotation = Math.floor(Math.random() * 360) + 720; // At least 2 full spins
-    setRotation(newRotation);
-
-    setTimeout(() => {
-      setSpinning(false);
-      const winnerIndex = Math.floor(
-        (360 - (newRotation % 360)) / (360 / restaurants.length)
-      );
-      onSpin(restaurants[winnerIndex]);
-    }, 3000);
+export default function Turntable() {
+  const handleDraw = () => {
+    alert("抽獎");
   };
 
   return (
-    <div className="relative w-64 h-64 mx-auto">
-      <div
-        className={`w-full h-full rounded-full overflow-hidden border-4 border-orange-300 transition-transform duration-3000 ease-out`}
-        style={{ transform: `rotate(${rotation}deg)` }}
-      >
-        {restaurants.map((restaurant, index) => (
-          <div
+    <div className="flex justify-center items-center">
+      <div className="w-[300px] h-[300px] bg-red-500 rounded-full flex justify-center items-center relative">
+        <div className="w-[280px] h-[280px] rounded-full absolute overflow-hidden">
+          {prizes.map((_, index) => (
+            <PrizeContainer key={index} index={index} />
+          ))}
+        </div>
+        {prizes.map((prize, index) => (
+          <Prize
             key={index}
-            className={`absolute w-1/2 h-1/2 origin-bottom-right ${
-              index % 2 === 0 ? "bg-orange-200" : "bg-orange-100"
-            }`}
-            style={{
-              transform: `rotate(${
-                (360 / restaurants.length) * index
-              }deg) skew(${90 - 360 / restaurants.length}deg)`,
-            }}
-          >
-            <span className="absolute top-0 left-1/2 -translate-x-1/2 rotate-90 origin-left text-xs mt-2">
-              {restaurant}
-            </span>
-          </div>
+            index={index}
+            name={prize.name}
+            description={prize.description}
+          />
         ))}
+        <DrawButton onClick={handleDraw} />
       </div>
-      {[...Array(restaurants.length)].map((_, index) => (
-        <div
-          key={index}
-          className={`absolute w-3 h-3 rounded-full ${
-            index % 3 === 0 ? "bg-red-500" : "bg-white"
-          }`}
-          style={{
-            top: `${
-              50 - 48 * Math.cos((Math.PI * 2 * index) / restaurants.length)
-            }%`,
-            left: `${
-              50 + 48 * Math.sin((Math.PI * 2 * index) / restaurants.length)
-            }%`,
-          }}
-        />
-      ))}
-      <button
-        onClick={spin}
-        disabled={spinning}
-        className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-blue-500 text-white px-4 py-2 rounded-full z-10"
-      >
-        Spin
-      </button>
     </div>
   );
-};
+}
 
-export default Turntable;
+interface PrizeContainerProps {
+  index: number;
+}
+
+function PrizeContainer({ index }: PrizeContainerProps) {
+  return (
+    <div
+      className="w-[280px] h-[280px] bg-orange-200 absolute left-1/2 -top-1/2 border border-white origin-bottom-left"
+      style={{ transform: `rotate(${index * 60}deg) skewY(-30deg)` }}
+    ></div>
+  );
+}
+
+interface PrizeProps {
+  index: number;
+  name: string;
+  description: string;
+}
+
+function Prize({ index, name, description }: PrizeProps) {
+  return (
+    <div
+      className="w-[140px] h-[140px] absolute left-1/2 top-0 origin-bottom-left"
+      style={{ transform: `rotate(${index * 60}deg)` }}
+    >
+      <div className="w-full h-full flex flex-col items-center justify-center transform rotate-[30deg] -translate-x-[15%] translate-y-[10%]">
+        <div>{description}</div>
+        <p>{name}</p>
+      </div>
+    </div>
+  );
+}
+
+interface DrawButtonProps {
+  onClick: () => void;
+}
+
+function DrawButton({ onClick }: DrawButtonProps) {
+  return (
+    <div
+      className="w-20 h-20 rounded-full bg-red-500 text-white text-3xl leading-[80px] text-center absolute cursor-pointer"
+      onClick={onClick}
+    >
+      抽
+    </div>
+  );
+}
