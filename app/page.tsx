@@ -1,6 +1,25 @@
+"use client"; // Add this line at the top
+
 import Image from "next/image";
+import { useEffect, useState } from "react";
+import { db } from "@/config/firebaseConfig";
+import { collection, getDocs, DocumentData } from "firebase/firestore";
 
 export default function Home() {
+  const [data, setData] = useState<DocumentData[]>([]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const querySnapshot = await getDocs(
+        collection(db, "your-collection-name")
+      );
+      const dataList = querySnapshot.docs.map((doc) => doc.data());
+      setData(dataList);
+    };
+
+    fetchData();
+  }, []);
+
   return (
     <main className="flex min-h-screen flex-col items-center justify-between p-24">
       <div className="z-10 w-full max-w-5xl items-center justify-between font-mono text-sm lg:flex">
@@ -107,6 +126,15 @@ export default function Home() {
             Instantly deploy your Next.js site to a shareable URL with Vercel.
           </p>
         </a>
+      </div>
+
+      <div>
+        <h1>Firestore Data</h1>
+        <ul>
+          {data.map((item, index) => (
+            <li key={index}>{JSON.stringify(item)}</li>
+          ))}
+        </ul>
       </div>
     </main>
   );
